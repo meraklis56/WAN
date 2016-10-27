@@ -37,8 +37,9 @@ public class EmbeddedSystems {
 
 class MyPanel extends JPanel {
 
-    public int numberSensors = 2;
-    public int range = 70;
+    public int numberSensors = 3;
+    public int range = 70; //meters
+    public int gap = 1000;
 
     public MyPanel() {
     }
@@ -52,12 +53,10 @@ class MyPanel extends JPanel {
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create(); 
+        Graphics2D g2d = (Graphics2D) g.create();
         g2d.setFont(new Font("Segoe UI", Font.ITALIC, 20));
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
-
-       
 
         Ellipse2D.Double server_dot = new Ellipse2D.Double(50, 200, 8, 8);
         g2d.fill(server_dot);
@@ -69,10 +68,14 @@ class MyPanel extends JPanel {
         g2d.fill(swimming_circle);
         //Swimming Area Circle
 
-        Ellipse2D.Double safe_circle = new Ellipse2D.Double(140, 50, 365, 365);
+        g2d.drawRect(260, 50, 150, 364);
+        g2d.fillRect(260, 50, 150, 364);
+        //Swimming Area Rectangle
+
+        Ellipse2D.Double gap_circle = new Ellipse2D.Double(190, 50, 365, 365);
         g2d.setColor(new Color(0, 230, 118));
-        g2d.fill(safe_circle);
-        //Safety Area Circle
+        g2d.fill(gap_circle);
+        //Gap left circle
 
         Ellipse2D.Double swimming_dot = new Ellipse2D.Double(120, 200, 8, 8);
         g2d.setColor(Color.BLACK);
@@ -81,29 +84,39 @@ class MyPanel extends JPanel {
         //Swimming Area dot & Text
 
         g2d.setColor(new Color(0, 230, 118));
-        g2d.drawRect(300, 50, 400, 364);
-        g2d.fillRect(300, 50, 400, 364);
-        //Safety Area rectangle
+        g2d.drawRect(372, 50, (gap - 372), 364);
+        g2d.fillRect(372, 50, (gap - 372), 364);
+        //Gap rectangle
 
         g2d.setColor(new Color(255, 109, 0));
         //Deployment Area Circle
 
-        g2d.drawRect(700, 50, 900, 364);
-        g2d.fillRect(700, 50, 900, 364);
+        g2d.drawRect(gap, 50, 1200, 364);
+        g2d.fillRect(gap, 50, 1200, 364);
         //Deployment Area Rect
 
-        g2d.setColor(Color.BLACK);
-        g2d.drawString("Deployment Area", 1080, 170);
-        //Safety Area Text   
-
         g2d.setColor(new Color(0, 230, 118));
-        Ellipse2D.Double safety_circle = new Ellipse2D.Double(500, 50, 365, 365);
+        Ellipse2D.Double safety_circle = new Ellipse2D.Double((gap - 190), 50, 365, 365); //depending the gap size
         g2d.fill(safety_circle);
-        //Safety Area circle 
+        //Gap right circle 
 
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Safety Area", 530, 170);
-        //Safety Area Text
+        g2d.drawString("Gap", 530, 170);
+        //Gap Text
 
+        g2d.setColor(Color.RED);
+        Ellipse2D.Double swimmers = new Ellipse2D.Double(372, 50, 8, 8);
+        g2d.drawString("Swimmers", 372, 35);
+        g2d.fill(swimmers);
+        //swimmers position 
+
+        Ellipse2D.Double swimmers2 = new Ellipse2D.Double(190, 200, 8, 8);
+        g2d.fill(swimmers2);
+        g2d.drawString("Swimmers2", 190, 235);
+        //swimmers position 2
+
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("Deployment Area", (gap + 150), 170);
+        //Deployment Text 
     }
 }
