@@ -37,7 +37,7 @@ public class EmbeddedSystems {
 
 class MyPanel extends JPanel {
 
-    public int numberSensors = 3;
+    public int numberSensors = 2;
     public int range = 70;
 
     public MyPanel() {
@@ -50,44 +50,40 @@ class MyPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create();
-        RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHints(hints);
+        Graphics2D g2d = (Graphics2D) g.create(); 
+        g2d.setFont(new Font("Segoe UI", Font.ITALIC, 20));
+        g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
 
-        g2d.setFont(new Font("Segoe UI", Font.ITALIC, 20));
+       
 
-        //g2d.drawOval(21,172,5,5);
-        Ellipse2D.Double circle = new Ellipse2D.Double(50, 200, 8, 8);
-        g2d.fill(circle);
+        Ellipse2D.Double server_dot = new Ellipse2D.Double(50, 200, 8, 8);
+        g2d.fill(server_dot);
         g2d.drawString("Server", 20, 170);
-        //Server Text
+        //Server dot & text
 
-        //Ellipse2D.Double circle2 = new Ellipse2D.Double(90, -20, 400, 400);
-        Ellipse2D.Double circle2 = new Ellipse2D.Double(90, 50, 365, 365);
+        Ellipse2D.Double swimming_circle = new Ellipse2D.Double(90, 50, 365, 365);
         g2d.setColor(new Color(3, 155, 229));
-        g2d.fill(circle2);
+        g2d.fill(swimming_circle);
         //Swimming Area Circle
 
-        Ellipse2D.Double circle3 = new Ellipse2D.Double(140, 50, 365, 365);
+        Ellipse2D.Double safe_circle = new Ellipse2D.Double(140, 50, 365, 365);
         g2d.setColor(new Color(0, 230, 118));
-        g2d.fill(circle3);
+        g2d.fill(safe_circle);
         //Safety Area Circle
 
-        Ellipse2D.Double circle5 = new Ellipse2D.Double(500, 50, 365, 365);
-        g2d.fill(circle5);
-
+        Ellipse2D.Double swimming_dot = new Ellipse2D.Double(120, 200, 8, 8);
         g2d.setColor(Color.BLACK);
-        Ellipse2D.Double circle4 = new Ellipse2D.Double(120, 200, 8, 8);
-        g2d.fill(circle4);
+        g2d.fill(swimming_dot);
         g2d.drawString("Swimming Area", 130, 170);
-        //Swimming Area Text
+        //Swimming Area dot & Text
 
         g2d.setColor(new Color(0, 230, 118));
         g2d.drawRect(300, 50, 400, 364);
         g2d.fillRect(300, 50, 400, 364);
-        //Safety Area
+        //Safety Area rectangle
 
         g2d.setColor(new Color(255, 109, 0));
         //Deployment Area Circle
@@ -96,16 +92,15 @@ class MyPanel extends JPanel {
         g2d.fillRect(700, 50, 900, 364);
         //Deployment Area Rect
 
-
         g2d.setColor(Color.BLACK);
         g2d.drawString("Deployment Area", 1080, 170);
         //Safety Area Text   
 
         g2d.setColor(new Color(0, 230, 118));
-        Ellipse2D.Double circle8 = new Ellipse2D.Double(500, 50, 365, 365);
-        g2d.fill(circle8);
-        
-        
+        Ellipse2D.Double safety_circle = new Ellipse2D.Double(500, 50, 365, 365);
+        g2d.fill(safety_circle);
+        //Safety Area circle 
+
         g2d.setColor(Color.BLACK);
         g2d.drawString("Safety Area", 530, 170);
         //Safety Area Text
