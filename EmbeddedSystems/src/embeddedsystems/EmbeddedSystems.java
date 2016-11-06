@@ -18,7 +18,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 public class EmbeddedSystems {
 
@@ -63,7 +62,7 @@ class MyPanel extends JPanel {
     int[] shark_pos1 = new int[]{3000, 100};
     int[] shark_pos2 = new int[]{3000, 1500};
     int[] shark_pos3 = new int[]{3000, 300};
-
+    
     Image img;
     Graphics2D g2d;
 
@@ -72,13 +71,10 @@ class MyPanel extends JPanel {
     int serverNumber = 0;
 
     int sensor_range = 100;
-    ArrayList<Double[]> sensors;
+    Sensor[] sensors;
 
-    //To DO
-    //Rename to GAP Area
-    //Change the colors
     public MyPanel() {
-        sensors = new ArrayList<Double[]>();
+        sensors = new Sensor[numberSensors];
         shark = new Shark();
     }
 
@@ -90,7 +86,7 @@ class MyPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create();
+        g2d = (Graphics2D) g.create();
         g2d.setFont(new Font("Segoe UI", Font.ITALIC, 20));
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
@@ -132,21 +128,20 @@ class MyPanel extends JPanel {
         Point center = new Point(beach_width / pixel_ratio, (model_height / pixel_ratio) / 2 - 5); //-5 is a fix
 
         int radius = ((gap_circle_radius * 2 / pixel_ratio) / 2);
+        int k = 0;
         for (int i = 0; i < (numberSensors * 2) + 1; i++) {
             double fi = 2 * Math.PI * i / (numberSensors * 2) + 1;
             double x = radius * Math.sin(fi + Math.PI) + center.getX();
             double y = radius * Math.cos(fi + Math.PI) + center.getY();
-            if ((x >= beach_width / pixel_ratio - 4)) { //-4 is a fix. Moving to y axis
-                g2d.fill(new Ellipse2D.Double(x, y, 8, 8));
-                sensors.add(new Double[]{x, y});
+            if ((x >= beach_width / pixel_ratio)) {
+                g2d.setColor(Color.BLACK);
+                g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
+                g2d.setColor(new Color(224, 64, 251, 210));
+                g2d.fill(new Ellipse2D.Double(x - 6, y - 6, sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
+                sensors[k] = new Sensor((int)x*pixel_ratio, (int)y*pixel_ratio);
+                k++;
             }
         }
-        //placing sensors on deployment circle
-        for (Double[] sensor : sensors) {
-            g2d.setColor(new Color(224, 64, 251, 200));
-            g2d.fill(new Ellipse2D.Double(sensor[0] - 6, sensor[1] - 6, sensor_range / pixel_ratio, sensor_range / pixel_ratio));
-        }
-        //drawing sensors' range
 
         g2d.setColor(Color.BLACK);
         g2d.fill(new Ellipse2D.Double((beach_width / pixel_ratio) + (swi_circle_radius * 2 / pixel_ratio) / 2 - 5, ((model_height / pixel_ratio) / 2), 8, 8));
@@ -157,8 +152,8 @@ class MyPanel extends JPanel {
 
         int[] server = new int[]{beach_width - 50, model_height / 2,};
 
-        double distancex = sensors.get(sensors.size() - 1)[0] * pixel_ratio - server[0];
-        double distancey = sensors.get(sensors.size() - 1)[1] * pixel_ratio - server[1];
+        double distancex = sensors[numberSensors - 1].getX() - server[0];
+        double distancey = sensors[numberSensors - 1].getY() - server[1];
         double distance = Math.hypot(distancex, distancey);
         if (distance < server_communication_radius) {
             g2d.fill(new Ellipse2D.Double(server[0] / pixel_ratio, server[1] / pixel_ratio, 8, 8));
@@ -175,28 +170,29 @@ class MyPanel extends JPanel {
         }
 
         shark.setLocation(shark_pos2[0], shark_pos2[1]);
-
         try {
             img = ImageIO.read(new File("shark.png"));
+            g2d.drawImage(img, shark.getX() / pixel_ratio, shark.getY() / pixel_ratio, null);
         } catch (IOException ex) {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        g2d.drawImage(img, shark.getX() / pixel_ratio, shark.getY() / pixel_ratio, null);
-
+        Sensors sen = new Sensors(sensors, shark, range, pixel_ratio);
+        sen.isNear();
     }
-
 }
 
 class Shark {
 
     int x, y;
+    ArrayList<Double[]> sensors;
 
     Shark() {
     }
 
-    Shark(int x, int y) {
+    Shark(int x, int y, ArrayList<Double[]> sensors) {
         this.x = x;
         this.y = y;
+        this.sensors = sensors;
     }
 
     public void setLocation(int x, int y) {
@@ -214,6 +210,74 @@ class Shark {
 
     public int getY() {
         return y;
+    }
+
+    public ArrayList<Double[]> getSensors() {
+        return sensors;
+    }
+
+    public void setSensors(ArrayList<Double[]> sensors) {
+        this.sensors = sensors;
+    }
+    
+}
+
+class Sensor {
+
+    int x, y;
+
+    public Sensor(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+}
+
+class Sensors {
+
+    Sensor[] sensorList;
+    Shark shark;
+    int range;
+    int pixel_ratio;
+
+    public Sensors(Sensor[] sensorList, Shark shark, int range, int pixel_ratio) {
+        this.sensorList = sensorList;
+        this.shark = shark;
+        this.range = range;
+        this.pixel_ratio = pixel_ratio;
+    }
+
+    public boolean isNear() {
+        for (int i = 0; i < sensorList.length; i++) {
+            double distance = calcDistance(sensorList[i]);
+            if (distance<range){
+                //notify Server
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public double calcDistance(Sensor sensor) {
+        double distancex = sensor.getX()/pixel_ratio - shark.getX()/pixel_ratio;
+        double distancey = sensor.getY()/pixel_ratio - shark.getY()/pixel_ratio;
+        double distance = Math.hypot(distancex, distancey);
+        return distance;
     }
 
 }
