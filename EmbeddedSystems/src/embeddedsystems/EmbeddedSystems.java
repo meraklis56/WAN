@@ -61,7 +61,7 @@ class MyPanel extends JPanel {
 
     int[] shark_pos1 = new int[]{3000, 100};
     int[] shark_pos2 = new int[]{3000, 1500};
-    int[] shark_pos3 = new int[]{3000, 300};
+    int[] shark_pos3 = new int[]{3000, 3000};
     
     Image img;
     Graphics2D g2d;
