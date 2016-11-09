@@ -62,7 +62,7 @@ class MyPanel extends JPanel {
     int model_height = 3000;
     private final int pixel_ratio = 5; //5 meter per pixel
     int beach_width = 900; //meters -
-    int gap_circle_radius = 1350;
+    int gap_circle_radius = 1500;
     int swi_circle_radius = 600;
     int server_communication_radius = 1500; //zigbee limitations
 
@@ -149,44 +149,43 @@ class MyPanel extends JPanel {
             g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
             // g2d.drawString("Sensor: " + i , ((int)x +25) , ((int)y));
             g2d.setColor(new Color(224, 64, 251, 210));
-            g2d.fill(new Ellipse2D.Double(x - ((sensor_range / pixel_ratio)/2.5), y - ((sensor_range / pixel_ratio)/2.5), sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
+            g2d.fill(new Ellipse2D.Double(x - ((sensor_range / pixel_ratio) / 2.5), y - ((sensor_range / pixel_ratio) / 2.5), sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
         }
 
         g2d.setColor(Color.BLACK);
-        g2d.fill(new Ellipse2D.Double(swim_pos1[0] / pixel_ratio - 4, swim_pos1[0] / pixel_ratio, 8, 8));
-        //Swimmers point 1
+//        g2d.fill(new Ellipse2D.Double(swim_pos1[0] / pixel_ratio - 4, swim_pos1[0] / pixel_ratio, 8, 8));
+//        //Swimmers point 1
+//
+//        g2d.fill(new Ellipse2D.Double(swim_pos2[0] / pixel_ratio - 4, swim_pos2[1] / pixel_ratio, 8, 8));
+//        //Swimmers point 2
 
-        g2d.fill(new Ellipse2D.Double(swim_pos2[0] / pixel_ratio - 4, swim_pos2[1] / pixel_ratio, 8, 8));
-        //Swimmers point 2
+        int[] server = new int[]{beach_width - 50, model_height / 2};
 
+        double distancex = mysensors.getSensorList().get(numberSensors - 1).getMx() - server[0];
+        double distancey = mysensors.getSensorList().get(numberSensors - 1).getMx() - server[1];
+        double distance = Math.hypot(distancex, distancey);
+        if (distance < server_communication_radius) {
+            g2d.fill(new Ellipse2D.Double(server[0] / pixel_ratio, server[1] / pixel_ratio, 8, 8));
+            g2d.drawString("Server", server[0] / pixel_ratio, server[1] / pixel_ratio - 10);
+        } else {
+            serverNumber = (gap_circle_radius * 2) / server_communication_radius;
+            int distance_server = (gap_circle_radius * 2) / (serverNumber + 1);
+            for (int i = 1; i < serverNumber + 1; i++) {
+                g2d.fill(new Ellipse2D.Double(server[0] / pixel_ratio,
+                        ((model_height - 2 * gap_circle_radius) / 2) / pixel_ratio + (i * gap_circle_radius * 2 / 3) / pixel_ratio,
+                        8, 8));
+                g2d.drawString("Server" + i, server[0] / pixel_ratio, (((model_height - 2 * gap_circle_radius) / 2) / pixel_ratio + (i * gap_circle_radius * 2 / 3) / pixel_ratio) - 10);
+            }
+        }
 
-         int[] server = new int[]{beach_width - 50, model_height / 2,};
+        try {
+            img = ImageIO.read(new File("shark.png"));
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+        } catch (IOException ex) {
+            Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-         double distancex = sensors[numberSensors - 1].getX() - server[0];
-         double distancey = sensors[numberSensors - 1].getY() - server[1];
-         double distance = Math.hypot(distancex, distancey);
-         if (distance < server_communication_radius) {
-         g2d.fill(new Ellipse2D.Double(server[0] / pixel_ratio, server[1] / pixel_ratio, 8, 8));
-         g2d.drawString("Server", server[0] / pixel_ratio, server[1] / pixel_ratio - 10);
-         } else {
-         serverNumber = (gap_circle_radius * 2) / server_communication_radius;
-         int distance_server = (gap_circle_radius * 2) / (serverNumber + 1);
-         for (int i = 1; i <= serverNumber; i++) {
-         g2d.fill(new Ellipse2D.Double(server[0] / pixel_ratio,
-         ((model_height - 2 * gap_circle_radius) / 2) / pixel_ratio + (i * gap_circle_radius * 2 / 3) / pixel_ratio,
-         8, 8));
-         g2d.drawString("Server" + i, server[0] / pixel_ratio, (((model_height - 2 * gap_circle_radius) / 2) / pixel_ratio + (i * gap_circle_radius * 2 / 3) / pixel_ratio) - 10);
-         }
-         }
-/*
-         shark.setLocation(shark_pos3[0], shark_pos3[1]);
-         try {
-         img = ImageIO.read(new File("shark.png"));
-         g2d.drawImage(img, shark.getX() / pixel_ratio, shark.getY() / pixel_ratio, null);
-         } catch (IOException ex) {
-         Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         System.out.println("Shark: " + shark.getX() + "," + shark.getY());
+        /*
          Sensors sen = new Sensors(sensors, shark, range, pixel_ratio, swim_pos2); //half circle of swimming
          sen.isNear();
          try {
