@@ -86,10 +86,12 @@ class MyPanel extends JPanel {
     int sensor_range = 100;
     int sharkSpeed = 70; //70 meters per seconds
     Sensor[] sensors;
+    Sensors mysensors;
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
         shark = new Shark();
+        mysensors = new Sensors(numberSensors, range, beach_width, model_height);
         
         
     }
@@ -142,14 +144,21 @@ class MyPanel extends JPanel {
         g2d.drawString("Number of Sensors: " + numberSensors, win_width - 260, 60);
         g2d.drawString("Sensor Range: " + sensor_range + "m", win_width - 260, 80);
 
-        Point center = new Point(beach_width / pixel_ratio, (model_height / pixel_ratio) / 2 - 5); //-5 is a fix
-
-        int radius = ((gap_circle_radius * 2 / pixel_ratio) / 2);
+        for (int i=0; i< mysensors.getSensorList().size(); i++){
+             g2d.setColor(Color.BLACK);
+             double x = mysensors.getSensorList().get(i).getPx();
+             double y = mysensors.getSensorList().get(i).getPy();
+                g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
+               // g2d.drawString("Sensor: " + i , ((int)x +25) , ((int)y));
+                g2d.setColor(new Color(224, 64, 251, 210));
+                g2d.fill(new Ellipse2D.Double(x - 6, y - 6, sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
+        }
+        /*
+        
+        int radius = ((gap_circle_radius * 2) / 2);
         int k = 0;
         for (int i = 0; i < (numberSensors * 2) + 1; i++) {
-            double fi = 2 * Math.PI * i / (numberSensors * 2) + 1;
-            double x = radius * Math.sin(fi + Math.PI) + center.getX();
-            double y = radius * Math.cos(fi + Math.PI) + center.getY();
+           
             if ((x >= beach_width / pixel_ratio)) {
                 g2d.setColor(Color.BLACK);
                 g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
@@ -203,76 +212,10 @@ class MyPanel extends JPanel {
         } catch (InterruptedException ex) {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
 }
 
-class Shark {
-
-    int x, y;
-    ArrayList<Double[]> sensors;
-
-    Shark() {
-    }
-
-    Shark(int x, int y, ArrayList<Double[]> sensors) {
-        this.x = x;
-        this.y = y;
-        this.sensors = sensors;
-    }
-
-    public void setLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int[] getLocation() {
-        return new int[]{x, y};
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public ArrayList<Double[]> getSensors() {
-        return sensors;
-    }
-
-    public void setSensors(ArrayList<Double[]> sensors) {
-        this.sensors = sensors;
-    }
-
-}
-
-class Sensor {
-
-    int x, y;
-
-    public Sensor(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-}
-
+/*
 class Sensors {
 
     Sensor[] sensorList;
@@ -293,25 +236,7 @@ class Sensors {
         this.position = position;
     }
 
-    public boolean isNear() {
-        for (int i = 0; i < sensorList.length; i++) {
-            double distance = calcDistance(sensorList[i]);
-//            System.out.println("ALERT. Sensor[" + i + "]: " + sensorList[i].getX() + "," + sensorList[i].getY() + "Distance: " + distance);
-            if (distance < range/pixel_ratio) {
-                if (temp==null){
-                    temp = sensorList[i];
-                System.out.println("Shark: " + shark.getX() + "," + shark.getY());
-//                MyPanel.g2d.fill(new Ellipse2D.Double(shark.getX(), shark.getX(), 15,15));
-//                MyPanel.g2d.fill(new Ellipse2D.Double(temp.getX(), temp.getY(), 15,15));
-                System.out.println("ALERT. Sensor[" + i + "]: " + sensorList[i].getX() + "," + sensorList[i].getY() + "Distance: " + distance);
-                //notify Server
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
+   
     public void moveShark() throws InterruptedException {
         double distancex = (position[0] - shark.getX());
         double distancey = (position[1] - shark.getY());
@@ -352,12 +277,7 @@ class Sensors {
         }
     }
 
-    public double calcDistance(Sensor sensor) {
-        double distancex = sensor.getX() / pixel_ratio - shark.getX() / pixel_ratio;
-        double distancey = sensor.getY() / pixel_ratio - shark.getY() / pixel_ratio;
-        double distance = Math.hypot(distancex, distancey);
-        return distance;
-    }
+   */
 
 }
 
