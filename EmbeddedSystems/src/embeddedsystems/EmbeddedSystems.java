@@ -8,6 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +35,20 @@ public class EmbeddedSystems {
 
     private static void createAndShowGUI() {
         JFrame f = new JFrame("WSFN Simulation");
+        f.setUndecorated(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.add(new MyPanel());
         f.pack();
         f.setVisible(true);
         f.setResizable(false);
-
+        
+        f.addMouseListener(new MouseAdapter() {
+            
+            @Override
+     public void mousePressed(MouseEvent e) {
+         System.out.println("mouse: " + e.getX() + "," + e.getY());
+     }
+});
     }
 
 }
@@ -46,7 +56,7 @@ public class EmbeddedSystems {
 class MyPanel extends JPanel {
 
     public int numberSensors = 50;
-    public int range = 70; //meters
+    public int range = 120; //meters
     public int gap = 700;
     int model_width = 5000;
     int model_height = 3000;
@@ -61,7 +71,7 @@ class MyPanel extends JPanel {
 
     int[] shark_pos1 = new int[]{3000, 100};
     int[] shark_pos2 = new int[]{3000, 1500};
-    int[] shark_pos3 = new int[]{3000, 2500};
+    int[] shark_pos3 = new int[]{2500, 1500};
 
     int[] swim_pos1 = new int[]{(beach_width + swi_circle_radius), model_height / 2}; //real coordinates
     int[] swim_pos2 = new int[]{beach_width, model_height / 2 - swi_circle_radius}; //real coordinates
@@ -74,11 +84,14 @@ class MyPanel extends JPanel {
     int serverNumber = 0;
 
     int sensor_range = 100;
+    int sharkSpeed = 70; //70 meters per seconds
     Sensor[] sensors;
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
         shark = new Shark();
+        
+        
     }
 
     @Override
@@ -94,6 +107,7 @@ class MyPanel extends JPanel {
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
 
+        
         g2d.setColor(Color.YELLOW);
         g2d.drawRect(0, 0, beach_width / pixel_ratio, model_height / pixel_ratio);
         g2d.fillRect(0, 0, beach_width / pixel_ratio, model_height / pixel_ratio);
@@ -139,9 +153,11 @@ class MyPanel extends JPanel {
             if ((x >= beach_width / pixel_ratio)) {
                 g2d.setColor(Color.BLACK);
                 g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
+                g2d.drawString("Sensor: " + k , ((int)x +25) , ((int)y));
                 g2d.setColor(new Color(224, 64, 251, 210));
                 g2d.fill(new Ellipse2D.Double(x - 6, y - 6, sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
-                sensors[k] = new Sensor((int) x * pixel_ratio, (int) y * pixel_ratio);
+                sensors[k] = new Sensor((int) x * pixel_ratio, (int) y * pixel_ratio); //in meters
+//                System.out.println("Sensor[" + k + "]:" + (int) x + "," + (int) y + "px - " + (int)x*pixel_ratio + "," + (int)y*pixel_ratio);
                 k++;
             }
         }
@@ -179,6 +195,7 @@ class MyPanel extends JPanel {
         } catch (IOException ex) {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("Shark: " + shark.getX() + "," + shark.getY());
         Sensors sen = new Sensors(sensors, shark, range, pixel_ratio, swim_pos2); //half circle of swimming
         sen.isNear();
         try {
@@ -262,6 +279,11 @@ class Sensors {
     Shark shark;
     int range, pixel_ratio;
     int[] position;
+    static double time;
+    int sharkSpeed = 70;
+    double sharkTraveltime;
+    boolean detected;
+    Sensor temp;
 
     public Sensors(Sensor[] sensorList, Shark shark, int range, int pixel_ratio, int[] position) {
         this.sensorList = sensorList;
@@ -274,8 +296,16 @@ class Sensors {
     public boolean isNear() {
         for (int i = 0; i < sensorList.length; i++) {
             double distance = calcDistance(sensorList[i]);
-            if (distance < range) {
+//            System.out.println("ALERT. Sensor[" + i + "]: " + sensorList[i].getX() + "," + sensorList[i].getY() + "Distance: " + distance);
+            if (distance < range/pixel_ratio) {
+                if (temp==null){
+                    temp = sensorList[i];
+                System.out.println("Shark: " + shark.getX() + "," + shark.getY());
+//                MyPanel.g2d.fill(new Ellipse2D.Double(shark.getX(), shark.getX(), 15,15));
+//                MyPanel.g2d.fill(new Ellipse2D.Double(temp.getX(), temp.getY(), 15,15));
+                System.out.println("ALERT. Sensor[" + i + "]: " + sensorList[i].getX() + "," + sensorList[i].getY() + "Distance: " + distance);
                 //notify Server
+                }
                 return true;
             }
         }
@@ -285,28 +315,40 @@ class Sensors {
     public void moveShark() throws InterruptedException {
         double distancex = (position[0] - shark.getX());
         double distancey = (position[1] - shark.getY());
-        double distance = Math.hypot(distancex, distancey);
+        double distance = Math.hypot(distancex, distancey); //in meters
+        sharkTraveltime += distance/sharkSpeed;
         int x, y, k;
         double dx, dy, p;
-        int x1 = position[0] / pixel_ratio, y1 = position[1] / pixel_ratio, x2 = shark.getX() / pixel_ratio, y2 = shark.getY() / pixel_ratio;
+        int x1 = position[0], y1 = position[1] , x2 = shark.getX() , y2 = shark.getY();
         dx = Math.abs(x2 - x1);
         dy = Math.abs(y2 - y1);
         x = x1;
         y = y1;
         p = 2 * dy - dx;
         for (k = 0; k < dx; k++) {
-            
             if (p < 0) {
-                MyPanel.g2d.drawImage(MyPanel.img, x++, y, null);
+                MyPanel.g2d.drawImage(MyPanel.img, x/pixel_ratio, y/pixel_ratio, null);
 //                MyPanel.g2d.fillOval(x++, y, 5, 5);
+                x++;
                 p = p + (2 * dy);
-                shark.setLocation(x, y);
+                shark.setLocation(x/pixel_ratio, y/pixel_ratio);
+//                System.out.println("Shark[" + x +", " + y +"]");
             } else {
-                MyPanel.g2d.drawImage(MyPanel.img, x++, y++, null);
+                MyPanel.g2d.drawImage(MyPanel.img, x/pixel_ratio, y/pixel_ratio, null);
+                x++;
+                y++;
 //                MyPanel.g2d.fillOval(x++, y++, 5, 5);
                 p = p + (2 * (dy - dx));
-                shark.setLocation(x, y);
+                shark.setLocation(x/pixel_ratio, y/pixel_ratio);
+//                System.out.println("Shark[" + x +", " + y +"]");
             }
+             if (isNear() && !detected){
+                 detected = true;
+                 System.out.println("Sensor: " + temp.getX() + "," + temp.getY());
+                 MyPanel.g2d.fill(new Ellipse2D.Double(temp.getX(), temp.getY(), 5,5));
+                 //find time to take shark to go to the position
+             }
+             System.out.println("Shark loc" + k + ": " + shark.getX() + "," + shark.getY());
         }
     }
 
@@ -318,3 +360,4 @@ class Sensors {
     }
 
 }
+
