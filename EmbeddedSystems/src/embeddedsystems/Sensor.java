@@ -11,11 +11,14 @@ package embeddedsystems;
  * @author ConnieZalo
  */
 public class Sensor {
-
+    private double max_width = 5000/5;
+    private double max_height = 3000/5;
     int mx, my;
     private static int pixel_ratio = 5;
     private double prange;
+    private int sensorID; 
     public int mrange= 120;
+    
     double px, py;
 
     public Sensor(int x, int y) {
@@ -26,9 +29,12 @@ public class Sensor {
         this.px = x / pixel_ratio;
         this.py = y / pixel_ratio;
     }
-      public Sensor(double x, double y) {
+      public Sensor(double x, double y,int id) {
         this.px = x ;
         this.py = y ;
+        
+        this.prange = (mrange/pixel_ratio);
+        this.sensorID = id;
     }
 
     public void setMx(int mx) {
@@ -73,18 +79,22 @@ public class Sensor {
 
     public boolean isSharkClose(Shark s) {
         double distance = calculateDistance(s);
+       // System.out.println(" I am Sensor " + prange + "detect shark at distance "+ distance );
+        
         if (prange >= distance) {
+            System.out.println(" I am Sensor " + this.sensorID + "detect shark at distance "+ distance );
             return true;
         }else{
+            
              return false;
         }
 }
 private double calculateDistance(Shark s){
  
-        double distancex = px - s.getPx(); 
+        double dx = px - s.getPx(); 
         
-        double distancey = py - s.getPy();
-        return Math.hypot(distancex, distancey);
+        double dy = py - s.getPy();
+        return Math.sqrt(dx*dx + dy*dy);
        
     }
 }

@@ -15,6 +15,8 @@ import java.util.ArrayList;
  */
 public class Shark {
 
+    private double max_width = 5000/5;
+    private double max_height = 3000/5;
     int mx, my;
     double px,py;
     private static int pixel_ratio = 5;
@@ -70,4 +72,43 @@ public class Shark {
         this.py = py;
     }
  
+    private void chooseDirection(int direction){
+        switch(direction){
+            case 0: 
+                //move west
+                this.px--;
+                break;
+            case 1: 
+                //move east
+                this.px++;
+                break;
+            case 2: 
+                //move south
+                this.py++;
+                break;
+            case 3: 
+                //move north
+                this.py--;
+                break;
+        }
+          
+    }
+    public void moveShark(int direction){
+      
+        chooseDirection(direction);
+    /*   if(py<=0){
+            py=py;
+        } 
+        if(py>=max_height/2){
+            py=py;
+        }
+        
+        if(px>= max_width)
+            px =px;
+        if(px<0){
+            px=px;
+        }
+        */
+        
+    }
 }

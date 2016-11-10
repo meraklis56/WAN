@@ -51,8 +51,8 @@ public class Sensors {
             double x = pradius * Math.sin(fi + Math.PI) + center.getX();
             double y = pradius * Math.cos(fi + Math.PI) + center.getY();
             if ((x >= pbeach_width)) {
-                Sensor e = new Sensor(x, y);
-                System.out.println("Sensor added: " + x + "," + y);
+                Sensor e = new Sensor(x, y,i);
+              //  System.out.println("Sensor added: " + x + "," + y);
                 sensorList.add(e);
             }
         }

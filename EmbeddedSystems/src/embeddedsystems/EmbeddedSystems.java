@@ -185,6 +185,22 @@ class MyPanel extends JPanel {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        
+        for(int i=0; i<100; i++){
+           
+            shark.moveShark(0);// west x--
+            
+        for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                mysensors.getSensorList().get(j).isSharkClose(shark);
+            }
+            try {
+                img = ImageIO.read(new File("shark.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+            
+        }
         /*
          Sensors sen = new Sensors(sensors, shark, range, pixel_ratio, swim_pos2); //half circle of swimming
          sen.isNear();
