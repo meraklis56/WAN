@@ -34,7 +34,7 @@ public class Sensors {
         this.pmodelheight = modelheight / pixel_ratio;
         this.mradius = radius;
         this.pradius = mradius / pixel_ratio;
-        this.shark = shark;
+        this.shark = s;
         center = new Point((int) pbeach_width, (int) (pmodelheight / 2) - 5); //-5 is a fix
 
         this.sensorList = new ArrayList<Sensor>();

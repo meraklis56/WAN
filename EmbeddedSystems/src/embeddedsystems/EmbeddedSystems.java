@@ -85,6 +85,9 @@ class MyPanel extends JPanel {
     int sharkSpeed = 70; //70 meters per seconds
     Sensor[] sensors;
     Sensors mysensors;
+    boolean detected = false;
+    int scenario = 2;
+    double distanceSharkSwam = 0;
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
@@ -97,6 +100,12 @@ class MyPanel extends JPanel {
     public Dimension getPreferredSize() {
         return new Dimension(model_width / pixel_ratio, model_height / pixel_ratio);
     }
+
+    private double calculateDistance(double[] pos1, double[] pos2) {
+        double dx = pos1[0] - pos2[0];
+        double dy = pos1[1] - pos2[1];
+        return Math.sqrt(dx * dx + dy * dy);
+    } //meters
 
     @Override
     public void paintComponent(Graphics g) {
@@ -183,75 +192,95 @@ class MyPanel extends JPanel {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        for (int i = 0; i < 200; i++) {
-
-            shark.moveShark(new int[]{2000, 1000});// west x--
-            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-
-            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                mysensors.getSensorList().get(j).isSharkClose(shark);
+        //Scenario 1
+        if (scenario == 1) {
+            int tempx = (int) (Math.random() * 150);
+            int tempy = (int) (Math.random() * 150);
+            double[] a = new double[]{shark.getMx(), shark.getMy()};
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{1000 + tempx, 1500 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
             }
-            try {
-                img = ImageIO.read(new File("shark.png"));
-            } catch (IOException ex) {
-                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+            double[] b = new double[]{1000 + tempx, 1500 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+            a = new double[]{shark.getMx(), shark.getMy()};
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{3000 + tempx, 2500 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
             }
+            b = new double[]{3000 + tempx, 2500 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+        } else if (scenario == 2) {
+            int tempx = (int) (Math.random() * 150);
+            int tempy = (int) (Math.random() * 150);
+            double[] a = new double[]{shark.getMx(), shark.getMy()};
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{2000 + tempx, 1000 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (!detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
+            }
+            double[] b = new double[]{2000 + tempx, 1000 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+            a = new double[]{shark.getMx(), shark.getMy()};
+            tempx = (int) (Math.random() * 150);
+            tempy = (int) (Math.random() * 150);
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{2500 + tempx, 1100 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
+            }
+            b = new double[]{2000 + tempx, 1000 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+            a = new double[]{shark.getMx(), shark.getMy()};
+            tempx = (int) (Math.random() * 150);
+            tempy = (int) (Math.random() * 150);
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{2000 + tempx, 1800 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
+            }
+            b = new double[]{2000 + tempx, 1000 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+            a = new double[]{shark.getMx(), shark.getMy()};
+            tempx = (int) (Math.random() * 150);
+            tempy = (int) (Math.random() * 150);
+            for (int i = 0; i < 200; i++) {
+                shark.moveShark(new int[]{3200 + tempx, 2500 + tempy});// west x--
+                g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+                if (detected) {
+                    for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                    }
+                }
+            }
+            b = new double[]{2000 + tempx, 1000 + tempy};
+            distanceSharkSwam += calculateDistance(a, b);
+            //calculate time
+            //add randomness
+            //profit
         }
-
-        for (int i = 0; i < 200; i++) {
-
-            shark.moveShark(new int[]{2500, 1100});// west x--
-            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-
-            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                mysensors.getSensorList().get(j).isSharkClose(shark);
-            }
-            try {
-                img = ImageIO.read(new File("shark.png"));
-            } catch (IOException ex) {
-                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-                for (int i = 0; i < 200; i++) {
-
-            shark.moveShark(new int[]{2000, 1800});// west x--
-            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-
-            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                mysensors.getSensorList().get(j).isSharkClose(shark);
-            }
-            try {
-                img = ImageIO.read(new File("shark.png"));
-            } catch (IOException ex) {
-                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-                
-                        for (int i = 0; i < 200; i++) {
-
-            shark.moveShark(new int[]{3200, 2500});// west x--
-            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-
-            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                mysensors.getSensorList().get(j).isSharkClose(shark);
-            }
-            try {
-                img = ImageIO.read(new File("shark.png"));
-            } catch (IOException ex) {
-                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-//            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null); */
-//        }
-        /*
-         Sensors sen = new Sensors(sensors, shark, range, pixel_ratio, swim_pos2); //half circle of swimming
-         sen.isNear();
-         try {
-         sen.moveShark();
-         } catch (InterruptedException ex) {
-         Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-         }*/
 
     }
 
