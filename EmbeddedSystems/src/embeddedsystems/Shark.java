@@ -93,9 +93,25 @@ public class Shark {
         }
           
     }
-    public void moveShark(int direction){
+    public void moveShark(int[] position){
       
-        chooseDirection(direction);
+//        double angle = Math.atan2(10/pixel_ratio-getPx(), 10/pixel_ratio-getPy()); //Math.atan2(25000/pixel_ratio-getPx(), 8500/pixel_ratio-getPy());
+//        double xVel = 1000/pixel_ratio * Math.cos(angle);
+//        double yVel = 1000/pixel_ratio * Math.sin(angle);
+//   
+//            setPx(getPx() + xVel);
+//            setPy(getPy() + yVel);
+
+        
+        double xVel = position[0]/pixel_ratio - getPx();
+        double yVel = position[1]/pixel_ratio - getPy();
+        double mag = Math.sqrt(xVel*xVel+yVel*yVel);
+        xVel=xVel*(70/pixel_ratio)/mag;
+        yVel=yVel*(70/pixel_ratio)/mag;
+        setPx(getPx() + xVel);
+        setPy(getPy() + yVel);
+        
+//        chooseDirection(direction);
     /*   if(py<=0){
             py=py;
         } 

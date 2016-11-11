@@ -17,6 +17,14 @@ public class Sensor {
     private static int pixel_ratio = 5;
     private double prange;
     private int sensorID; 
+
+    public int getSensorID() {
+        return sensorID;
+    }
+
+    public void setSensorID(int sensorID) {
+        this.sensorID = sensorID;
+    }
     public int mrange= 120;
     
     double px, py;
@@ -90,12 +98,9 @@ public class Sensor {
         }
 }
 private double calculateDistance(Shark s){
- 
         double dx = px - s.getPx(); 
-        
         double dy = py - s.getPy();
         return Math.sqrt(dx*dx + dy*dy);
-       
     }
 }
 

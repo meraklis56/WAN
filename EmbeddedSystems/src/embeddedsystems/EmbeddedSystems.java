@@ -6,14 +6,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -90,7 +88,7 @@ class MyPanel extends JPanel {
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
-        shark = new Shark(shark_pos3[0], shark_pos3[1]);
+        shark = new Shark(3500, 2500);
         mysensors = new Sensors(numberSensors, gap_circle_radius, beach_width, model_height, shark);
 
     }
@@ -147,7 +145,7 @@ class MyPanel extends JPanel {
             double x = mysensors.getSensorList().get(i).getPx();
             double y = mysensors.getSensorList().get(i).getPy();
             g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
-            // g2d.drawString("Sensor: " + i , ((int)x +25) , ((int)y));
+//            g2d.drawString("Sensor: " + mysensors.getSensorList().get(i).getSensorID(), ((int) x + 25), ((int) y));
             g2d.setColor(new Color(224, 64, 251, 210));
             g2d.fill(new Ellipse2D.Double(x - ((sensor_range / pixel_ratio) / 2.5), y - ((sensor_range / pixel_ratio) / 2.5), sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
         }
@@ -185,12 +183,12 @@ class MyPanel extends JPanel {
             Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
-        for(int i=0; i<100; i++){
-           
-            shark.moveShark(0);// west x--
-            
-        for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+        for (int i = 0; i < 200; i++) {
+
+            shark.moveShark(new int[]{1900, 1500});// west x--
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+
+            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
                 mysensors.getSensorList().get(j).isSharkClose(shark);
             }
             try {
@@ -198,9 +196,24 @@ class MyPanel extends JPanel {
             } catch (IOException ex) {
                 Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
-            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-            
         }
+
+        for (int i = 0; i < 200; i++) {
+
+            shark.moveShark(new int[]{3700, 800});// west x--
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+
+            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                mysensors.getSensorList().get(j).isSharkClose(shark);
+            }
+            try {
+                img = ImageIO.read(new File("shark.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+//            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null); */
+//        }
         /*
          Sensors sen = new Sensors(sensors, shark, range, pixel_ratio, swim_pos2); //half circle of swimming
          sen.isNear();
@@ -208,8 +221,8 @@ class MyPanel extends JPanel {
          sen.moveShark();
          } catch (InterruptedException ex) {
          Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
-         }
          }*/
+
     }
 
     /*
