@@ -88,7 +88,7 @@ class MyPanel extends JPanel {
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
-        shark = new Shark(3500, 2500);
+        shark = new Shark(3000, 500);
         mysensors = new Sensors(numberSensors, gap_circle_radius, beach_width, model_height, shark);
 
     }
@@ -185,7 +185,7 @@ class MyPanel extends JPanel {
 
         for (int i = 0; i < 200; i++) {
 
-            shark.moveShark(new int[]{1900, 1500});// west x--
+            shark.moveShark(new int[]{2000, 1000});// west x--
             g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
 
             for (int j = 0; j < mysensors.getSensorList().size(); j++) {
@@ -200,7 +200,37 @@ class MyPanel extends JPanel {
 
         for (int i = 0; i < 200; i++) {
 
-            shark.moveShark(new int[]{3700, 800});// west x--
+            shark.moveShark(new int[]{2500, 1100});// west x--
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+
+            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                mysensors.getSensorList().get(j).isSharkClose(shark);
+            }
+            try {
+                img = ImageIO.read(new File("shark.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+                for (int i = 0; i < 200; i++) {
+
+            shark.moveShark(new int[]{2000, 1800});// west x--
+            g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
+
+            for (int j = 0; j < mysensors.getSensorList().size(); j++) {
+                mysensors.getSensorList().get(j).isSharkClose(shark);
+            }
+            try {
+                img = ImageIO.read(new File("shark.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(MyPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+                
+                        for (int i = 0; i < 200; i++) {
+
+            shark.moveShark(new int[]{3200, 2500});// west x--
             g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
 
             for (int j = 0; j < mysensors.getSensorList().size(); j++) {
