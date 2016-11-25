@@ -70,6 +70,9 @@ class MyPanel extends JPanel {
     int[] shark_pos1 = new int[]{3000, 100};
     int[] shark_pos2 = new int[]{3000, 1500};
     int[] shark_pos3 = new int[]{2500, 1500};
+    double[] shark_pos1d = new double[]{3000, 100};
+    
+    // double init_pos[] = new double[(double)shark_pos1[0], (double)shark_pos1[1]]();
 
     int[] swim_pos1 = new int[]{(beach_width + swi_circle_radius), model_height / 2}; //real coordinates
     int[] swim_pos2 = new int[]{beach_width, model_height / 2 - swi_circle_radius}; //real coordinates
@@ -87,11 +90,17 @@ class MyPanel extends JPanel {
     Sensors mysensors;
     boolean detected = false;
     int scenario = 1;
-    double distanceSharkSwam = 0;
+    double distanceSharkSwam = 0; //in meters
+
+    double seconds = 0; //time parameter, milliseconds
+    double sensordetection = 0; //when the shark is detected by sensors, milliseconds
 
     public MyPanel() {
         sensors = new Sensor[numberSensors];
         shark = new Shark(3000, 500);
+        System.out.println("---------------Scenario " + scenario + "-------------");
+        System.out.println("Shark Initial Position(" + shark.getMx() + "," + shark.getMy() + ")");
+        System.out.println("Shark Speed: " + sharkSpeed);
         mysensors = new Sensors(numberSensors, gap_circle_radius, beach_width, model_height, shark);
 
     }
@@ -115,9 +124,9 @@ class MyPanel extends JPanel {
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
 
-        g2d.setColor(new Color(244,164,96));
-        g2d.drawRect(60, 0, beach_width/(pixel_ratio), model_height / pixel_ratio);
-        g2d.fillRect(60, 0, beach_width /(pixel_ratio), model_height / pixel_ratio);
+        g2d.setColor(new Color(244, 164, 96));
+        g2d.drawRect(60, 0, beach_width / (pixel_ratio), model_height / pixel_ratio);
+        g2d.fillRect(60, 0, beach_width / (pixel_ratio), model_height / pixel_ratio);
         //Beach Rectangle
 
         g2d.setColor(new Color(159, 207, 251));
@@ -197,27 +206,47 @@ class MyPanel extends JPanel {
             int tempx = (int) (Math.random() * 150);
             int tempy = (int) (Math.random() * 150);
             double[] a = new double[]{shark.getMx(), shark.getMy()};
+            System.out.println("Shark Position1: " + (1000 + tempx) + "," + (1500 + tempy));
+            int sensordetector = -1;
             for (int i = 0; i < 200; i++) {
                 shark.moveShark(new int[]{1000 + tempx, 1500 + tempy});// west x--
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
-                if (detected) {
+                if (!detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+                        if (mysensors.getSensorList().get(j).isSharkClose(shark)>=0){
+                            sensordetector = j;
+                            detected = true;
+                            break;
+                        }
                     }
                 }
             }
+            shark.setLocation(1000 + tempx, 1500 + tempy);
+            double[] temp = new double[]{1000 + tempx, 1500 + tempy};
+            distanceSharkSwam += calculateDistance(shark_pos1d, temp);
+            double[] temp2 = new double[]{mysensors.getSensorList().get(sensordetector).getMx(),  mysensors.getSensorList().get(sensordetector).getMy()};
+            double distancesensordetected = calculateDistance(shark_pos1d, temp2);
+            System.out.println("Step1, distance covered: " + distanceSharkSwam);
+            seconds = calculateDistance(shark_pos1d, temp) / shark.shark_speed;
+            System.out.println("Step1, seconds of travel: " + seconds);
+            System.out.println("Step1, distance from shark to sensor: " + distancesensordetected);
+            sensordetection = distancesensordetected / shark.shark_speed;
+            System.out.println("Step1, seconds to be detected: " + sensordetection);
+
             double[] b = new double[]{1000 + tempx, 1500 + tempy};
             distanceSharkSwam += calculateDistance(a, b);
             a = new double[]{shark.getMx(), shark.getMy()};
             for (int i = 0; i < 200; i++) {
+                System.out.println("in?");
                 shark.moveShark(new int[]{3000 + tempx, 2500 + tempy});// west x--
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+//                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
                     }
                 }
             }
+            
             b = new double[]{3000 + tempx, 2500 + tempy};
             distanceSharkSwam += calculateDistance(a, b);
         } else if (scenario == 2) {
@@ -229,7 +258,7 @@ class MyPanel extends JPanel {
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (!detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+//                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
                     }
                 }
             }
@@ -243,7 +272,7 @@ class MyPanel extends JPanel {
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+//                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
                     }
                 }
             }
@@ -257,7 +286,7 @@ class MyPanel extends JPanel {
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+//                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
                     }
                 }
             }
@@ -271,15 +300,16 @@ class MyPanel extends JPanel {
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
+//                        detected = mysensors.getSensorList().get(j).isSharkClose(shark);
                     }
                 }
             }
             b = new double[]{2000 + tempx, 1000 + tempy};
             distanceSharkSwam += calculateDistance(a, b);
             //calculate time
-            //add randomness
             //profit
+        } else if (scenario == 3) {
+
         }
 
     }

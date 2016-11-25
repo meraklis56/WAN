@@ -20,6 +20,7 @@ public class Shark {
     int mx, my;
     double px,py;
     private static int pixel_ratio = 5;
+    public double shark_speed = 19.4444; //meters per second
   
     Shark() {
     }
@@ -32,9 +33,11 @@ public class Shark {
         
     }
 
-    public void setLocation(double x, double y) {
-        this.px = x;
-        this.py = y;
+    public void setLocation(int x, int y) {
+        this.px = x * pixel_ratio;
+        this.py = y * pixel_ratio;
+        this.mx = x;
+        this.my = y;
     }
     public  double[] getLocation() {
         return new double[] {px,py};
