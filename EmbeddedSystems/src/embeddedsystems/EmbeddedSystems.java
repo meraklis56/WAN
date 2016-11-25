@@ -67,13 +67,12 @@ class MyPanel extends JPanel {
     public int win_width = model_width / pixel_ratio;
     public int win_height = model_height / pixel_ratio; //window dimensions
 
-    int[] shark_pos1 = new int[]{3000, 100};
+    int[] shark_pos1 = new int[]{3000, 500};
     int[] shark_pos2 = new int[]{3000, 1500};
     int[] shark_pos3 = new int[]{2500, 1500};
-    double[] shark_pos1d = new double[]{3000, 100};
-    
-    // double init_pos[] = new double[(double)shark_pos1[0], (double)shark_pos1[1]]();
+    double[] shark_pos1d = new double[]{3000, 500};
 
+    // double init_pos[] = new double[(double)shark_pos1[0], (double)shark_pos1[1]]();
     int[] swim_pos1 = new int[]{(beach_width + swi_circle_radius), model_height / 2}; //real coordinates
     int[] swim_pos2 = new int[]{beach_width, model_height / 2 - swi_circle_radius}; //real coordinates
 
@@ -203,9 +202,9 @@ class MyPanel extends JPanel {
 
         //Scenario 1
         if (scenario == 1) {
-            int tempx = (int) (Math.random() * 150);
-            int tempy = (int) (Math.random() * 150);
-            double[] a = new double[]{shark.getMx(), shark.getMy()};
+            int tempx = (int) (Math.random() * 150); //random x
+            int tempy = (int) (Math.random() * 150); //random y
+            double[] a = new double[]{shark.getMx(), shark.getMy()}; //initial position
             System.out.println("Shark Position1: " + (1000 + tempx) + "," + (1500 + tempy));
             int sensordetector = -1;
             for (int i = 0; i < 200; i++) {
@@ -213,7 +212,7 @@ class MyPanel extends JPanel {
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (!detected) {
                     for (int j = 0; j < mysensors.getSensorList().size(); j++) {
-                        if (mysensors.getSensorList().get(j).isSharkClose(shark)>=0){
+                        if (mysensors.getSensorList().get(j).isSharkClose(shark) >= 0) {
                             sensordetector = j;
                             detected = true;
                             break;
@@ -221,23 +220,25 @@ class MyPanel extends JPanel {
                     }
                 }
             }
+            tempx = (int) (Math.random() * 150);
+            tempy = (int) (Math.random() * 150);
             shark.setLocation(1000 + tempx, 1500 + tempy);
-            double[] temp = new double[]{1000 + tempx, 1500 + tempy};
-            distanceSharkSwam += calculateDistance(shark_pos1d, temp);
-            double[] temp2 = new double[]{mysensors.getSensorList().get(sensordetector).getMx(),  mysensors.getSensorList().get(sensordetector).getMy()};
-            double distancesensordetected = calculateDistance(shark_pos1d, temp2);
+            double[] b = new double[]{1000 + tempx, 1500 + tempy}; //position inside swimming area
+            distanceSharkSwam += calculateDistance(a, b); //correct
+            double[] temp2 = new double[]{mysensors.getSensorList().get(sensordetector).getMx(), mysensors.getSensorList().get(sensordetector).getMy()};
+            //position of sensor that deteted the shark
+            double distancesensordetected = calculateDistance(a, temp2);
             System.out.println("Step1, distance covered: " + distanceSharkSwam);
-            seconds = calculateDistance(shark_pos1d, temp) / shark.shark_speed;
+            seconds = calculateDistance(a, b) / shark.shark_speed;
             System.out.println("Step1, seconds of travel: " + seconds);
             System.out.println("Step1, distance from shark to sensor: " + distancesensordetected);
             sensordetection = distancesensordetected / shark.shark_speed;
-            System.out.println("Step1, seconds to be detected: " + sensordetection);
+            System.err.println("Step1, seconds to be detected: " + sensordetection);
 
-            double[] b = new double[]{1000 + tempx, 1500 + tempy};
-            distanceSharkSwam += calculateDistance(a, b);
-            a = new double[]{shark.getMx(), shark.getMy()};
+            tempx = (int) (Math.random() * 150);
+            tempy = (int) (Math.random() * 150);
+            double[] c = new double[]{3000 + tempx, 2500 + tempy};
             for (int i = 0; i < 200; i++) {
-                System.out.println("in?");
                 shark.moveShark(new int[]{3000 + tempx, 2500 + tempy});// west x--
                 g2d.drawImage(img, (int) shark.getPx(), (int) shark.getPy(), null);
                 if (detected) {
@@ -246,9 +247,26 @@ class MyPanel extends JPanel {
                     }
                 }
             }
+            System.out.println("Step2, distance added: " + calculateDistance(b, c));
+            distanceSharkSwam += calculateDistance(b, c); //distance from a position to new pos
+            System.out.println("Step2, distance total: " + distanceSharkSwam);
+            System.out.println("Step2, total swimming time: " + distanceSharkSwam / shark.shark_speed);
+            System.err.println("Time from sensors to swimming area: " + calculateDistance(temp2, b) / shark.shark_speed);
+
+            double responseTime = 0;
+            responseTime += 0.05; //processing time, p1
+            responseTime += 0.5; //understand, p2
+            double alpha = 0;
+            if (sensordetector > numberSensors - sensordetector) { //checks which is the fast path to server
+                alpha = (numberSensors - sensordetector) * 0.1; //zigbee communication time for each sensor until it reaches server
+            } else {
+                alpha = sensordetector * 0.1;
+            }
+            responseTime += alpha;
+            responseTime += 0; //calculate alpha
+            responseTime += 1; //server calculation time
+            System.out.println("Response Time: " + responseTime);
             
-            b = new double[]{3000 + tempx, 2500 + tempy};
-            distanceSharkSwam += calculateDistance(a, b);
         } else if (scenario == 2) {
             int tempx = (int) (Math.random() * 150);
             int tempy = (int) (Math.random() * 150);
