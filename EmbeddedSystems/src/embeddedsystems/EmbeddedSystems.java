@@ -86,7 +86,7 @@ class MyPanel extends JPanel {
     Sensor[] sensors;
     Sensors mysensors;
     boolean detected = false;
-    int scenario = 2;
+    int scenario = 1;
     double distanceSharkSwam = 0;
 
     public MyPanel() {
@@ -115,19 +115,19 @@ class MyPanel extends JPanel {
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
         //anti-aliasing
 
-        g2d.setColor(Color.YELLOW);
-        g2d.drawRect(0, 0, beach_width / pixel_ratio, model_height / pixel_ratio);
-        g2d.fillRect(0, 0, beach_width / pixel_ratio, model_height / pixel_ratio);
+        g2d.setColor(new Color(244,164,96));
+        g2d.drawRect(60, 0, beach_width/(pixel_ratio), model_height / pixel_ratio);
+        g2d.fillRect(60, 0, beach_width /(pixel_ratio), model_height / pixel_ratio);
         //Beach Rectangle
 
-        g2d.setColor(new Color(0, 230, 118));
+        g2d.setColor(new Color(159, 207, 251));
         g2d.fillArc((-((gap_circle_radius / pixel_ratio)) + (beach_width / pixel_ratio)),
                 (model_height / pixel_ratio - (gap_circle_radius / pixel_ratio * 2)) / 2,
                 (gap_circle_radius * 2 / pixel_ratio), (gap_circle_radius * 2 / pixel_ratio),
                 -90, 180);
         //Gap Area
 
-        g2d.setColor(new Color(3, 155, 229));
+        g2d.setColor(new Color(190, 224, 255));
         g2d.fillArc((-((swi_circle_radius / pixel_ratio)) + (beach_width / pixel_ratio)),
                 ((model_height / pixel_ratio) - (swi_circle_radius / pixel_ratio * 2)) / 2,
                 (swi_circle_radius * 2 / pixel_ratio), (swi_circle_radius * 2 / pixel_ratio),
@@ -135,13 +135,13 @@ class MyPanel extends JPanel {
         //Swimming Area
 
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Beach", 30, (model_height / pixel_ratio) / 2);
+        g2d.drawString("Beach", 70, (model_height / pixel_ratio) / 2);
         //Deployment Area Text
-        g2d.drawString("Swimming Area", 190, (model_height / pixel_ratio) / 2);
+        g2d.drawString("Swimming", 190, (model_height / pixel_ratio) / 2);
         //Swimming Area Text
         g2d.drawString("Gap", 370, (model_height / pixel_ratio) / 2);
         //Gap Text
-        g2d.drawString("Deployment Area", 500, (model_height / pixel_ratio) / 2);
+        g2d.drawString("Deployment", 540, (model_height / pixel_ratio) / 2);
         //Deployment Area Text
 
         g2d.drawString("Swimming Area Radius: " + swi_circle_radius + "m", win_width - 260, 20);
@@ -155,7 +155,7 @@ class MyPanel extends JPanel {
             double y = mysensors.getSensorList().get(i).getPy();
             g2d.fill(new Ellipse2D.Double(x, y, 8, 8)); //painting the sensor dots
 //            g2d.drawString("Sensor: " + mysensors.getSensorList().get(i).getSensorID(), ((int) x + 25), ((int) y));
-            g2d.setColor(new Color(224, 64, 251, 210));
+            g2d.setColor(new Color(255, 128, 128, 210));
             g2d.fill(new Ellipse2D.Double(x - ((sensor_range / pixel_ratio) / 2.5), y - ((sensor_range / pixel_ratio) / 2.5), sensor_range / pixel_ratio, sensor_range / pixel_ratio)); //painting the range of each sensor
         }
 
